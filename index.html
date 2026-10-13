@@ -46,9 +46,8 @@ h1{font-family:Saira,Inter,Helvetica,Arial,sans-serif;font-weight:800;font-size:
   h1{font-size:24px;margin-bottom:12px}
   .lead{display:none}
   .panel{padding:16px;gap:16px}
-  .panel .result{order:-3;padding:16px 18px}
+  .panel .result{padding:16px 18px}
   .panel .result .big{font-size:44px}
-  .panel .field{order:-2}
   .settings{gap:8px}
   .seg button{padding:6px 10px;min-height:38px;min-width:56px}
 }
@@ -75,6 +74,19 @@ svg.dragging .handle{cursor:grabbing}
 :root[data-theme="dark"] .seg button[aria-pressed="true"]{background:#FFCE00;color:#202020}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{background:#FFCE00;color:#202020}}
 .seg button:focus-visible,.lang button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.res-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.res-main{display:flex;flex-direction:column;gap:6px;min-width:0}
+.result .dia{font-size:12.5px;color:#d0d0d0}
+#xsec{width:120px;height:120px;flex-shrink:0;overflow:visible}
+#xsec .cab{transition:transform .25s ease}
+@media (prefers-reduced-motion: reduce){#xsec .cab{transition:none}}
+@media (max-width:640px){#xsec{width:96px;height:96px}}
+.step{display:flex;flex-direction:column;gap:6px}
+.num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#FFCE00;color:#202020;font:700 12.5px Inter,Helvetica,Arial,sans-serif;margin-right:8px;flex-shrink:0}
+.unitrow .k,.field label{display:inline-flex;align-items:center}
+.more{border-top:1px solid var(--tick);padding-top:18px;display:flex;flex-direction:column;gap:16px}
+.more h2{margin:0;font-family:Saira,Inter,Helvetica,Arial,sans-serif;font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.04em}
+.hint{font-size:12.5px;line-height:1.45;color:var(--muted)}
 .field{display:flex;flex-direction:column;gap:8px}
 .field .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 .field label{font-weight:700;font-size:15px}
@@ -89,6 +101,7 @@ input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:2px;
 .toggle{display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:14px;line-height:1.45}
 .toggle input{width:22px;height:22px;accent-color:#AD8B00;margin:1px 0 0;flex-shrink:0}
 .toggle strong{display:block;font-size:15px}
+.tipbox{background:var(--chip);border-left:4px solid var(--yellow);border-radius:6px;padding:12px 14px}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .stat{background:var(--chip);border-radius:6px;padding:12px 14px}
 .stat .k{font-size:12.5px;color:var(--muted)}
@@ -115,45 +128,61 @@ input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:2px;
   <div class="grid">
     <div class="card chart"><svg id="nomo" viewBox="0 0 698 730" role="img"></svg></div>
     <div class="card panel">
-      <div class="settings">
-        <div class="unitrow"><span class="k" id="voltLbl" data-t="volt"></span>
+      <div class="step">
+        <div class="unitrow"><span class="k" id="voltLbl"><span class="num">1</span><span data-t="voltQ"></span></span>
           <div class="seg" role="group" aria-labelledby="voltLbl">
             <button type="button" data-key="volt" data-val="12">12 V</button>
             <button type="button" data-key="volt" data-val="24">24 V</button>
           </div></div>
-        <div class="unitrow"><span class="k" id="matLbl" data-t="mat"></span>
-          <div class="seg" role="group" aria-labelledby="matLbl">
-            <button type="button" data-key="mat" data-val="cu" data-t="cu"></button>
-            <button type="button" data-key="mat" data-val="al" data-t="al"></button>
-          </div></div>
-        <div class="unitrow"><span class="k" id="unitLbl" data-t="unit"></span>
-          <div class="seg" role="group" aria-labelledby="unitLbl">
-            <button type="button" data-key="unit" data-val="mm2">mm²</button>
-            <button type="button" data-key="unit" data-val="awg">AWG</button>
-          </div></div>
-      </div>
-      <div class="result" aria-live="polite">
-        <div class="lbl" id="resLbl"></div>
-        <div class="big"><span id="resArea"></span><small id="resUnit">mm²</small></div>
-        <div class="sub" id="resSub"></div>
+        <div class="hint" data-t="voltHint"></div>
       </div>
       <div class="field">
-        <div class="row"><label for="len" data-t="lenLabel"></label><output id="lenOut" for="len"></output></div>
-        <input type="range" id="len" min="0" max="1000" step="1">
-        <div class="hint" data-t="lenHint"></div>
-      </div>
-      <div class="field">
-        <div class="row"><label for="pow" data-t="powLabel"></label><output id="powOut" for="pow"></output></div>
+        <div class="row"><label for="pow"><span class="num">2</span><span data-t="powLabel"></span></label><output id="powOut" for="pow"></output></div>
         <input type="range" id="pow" min="0" max="1000" step="1">
         <div class="hint" data-t="powHint"></div>
       </div>
-      <label class="toggle"><input type="checkbox" id="par"><span><strong data-t="parTitle"></strong><span data-t="parText"></span></span></label>
+      <div class="field">
+        <div class="row"><label for="len"><span class="num">3</span><span data-t="lenLabel"></span></label><output id="lenOut" for="len"></output></div>
+        <input type="range" id="len" min="0" max="1000" step="1">
+        <div class="hint" data-t="lenHint"></div>
+      </div>
+      <div class="result" aria-live="polite">
+        <div class="res-row">
+          <div class="res-main">
+            <div class="lbl" id="resLbl"></div>
+            <div class="big"><span id="resArea"></span><small id="resUnit">mm²</small></div>
+            <div class="dia" id="resDia"></div>
+          </div>
+          <svg id="xsec" viewBox="0 0 120 120" role="img"></svg>
+        </div>
+        <div class="sub" id="resSub"></div>
+      </div>
+      <label class="toggle tipbox"><input type="checkbox" id="par"><span><strong data-t="parTitle"></strong><span data-t="parText"></span></span></label>
       <div class="stats">
         <div class="stat"><div class="k" data-t="statCur"></div><div class="v" id="stCur"></div></div>
         <div class="stat"><div class="k" data-t="statPer"></div><div class="v" id="stPer"></div></div>
         <div class="stat"><div class="k" data-t="statRelay"></div><div class="v" id="stRelay"></div></div>
       </div>
       <p class="note" data-t="relayNote"></p>
+      <section class="more" aria-labelledby="moreH">
+        <h2 id="moreH" data-t="more"></h2>
+        <div class="step">
+          <div class="unitrow"><span class="k" id="matLbl" data-t="mat"></span>
+            <div class="seg" role="group" aria-labelledby="matLbl">
+              <button type="button" data-key="mat" data-val="cu" data-t="cu"></button>
+              <button type="button" data-key="mat" data-val="al" data-t="al"></button>
+            </div></div>
+          <div class="hint" data-t="matHint"></div>
+        </div>
+        <div class="step">
+          <div class="unitrow"><span class="k" id="unitLbl" data-t="unit"></span>
+            <div class="seg" role="group" aria-labelledby="unitLbl">
+              <button type="button" data-key="unit" data-val="mm2">mm²</button>
+              <button type="button" data-key="unit" data-val="awg">AWG</button>
+            </div></div>
+          <div class="hint" data-t="unitHint"></div>
+        </div>
+      </section>
       <p class="note" data-t="note"></p>
     </div>
   </div>
@@ -163,67 +192,67 @@ input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:2px;
 var T={
  sv:{title:'Välj rätt kabelarea',lead:'Dra i de gula punkterna i diagrammet, eller använd reglagen. Linjen visar direkt vilken kabelarea som behövs.',
   lenLabel:'Kabellängd',powLabel:'Effekt',powHint:'Vid {u} V. Strömmen räknas fram automatiskt.',
-  parTitle:'Två kablar parallellt',parText:'Varje kabel bär halva strömmen, så arean per kabel blir hälften.',
-  statCur:'Total ström',statPer:'Ström per kabel',volt:'Spänning',mat:'Ledarmaterial',cu:'Koppar',al:'Aluminium',lenHint:'Mät kabelns väg från batteriet till lampan – inte fågelvägen.',statRelay:'Relä (minst)',relayNote:'Reläet ska klara hela strömmen med marginal (×1,25). Över 40 A krävs ett kraftrelä, och över 200 A bör belysningen delas upp på flera reläer.',unit:'Enhet',
+  parTitle:'Två kablar parallellt',parText:'Tips: Blir kabeln för grov att dra eller ansluta? Dela upp strömmen på två kablar som går parallellt – då räcker hälften så stor area per kabel.',
+  statCur:'Total ström',statPer:'Ström per kabel',volt:'Spänning',mat:'Ledarmaterial',cu:'Koppar',al:'Aluminium',lenHint:'Mät kabelns väg från batteriet till lampan – inte fågelvägen.',statRelay:'Relä (minst)',relayNote:'Reläet ska klara hela strömmen med marginal (×1,25). Över 40 A krävs ett kraftrelä, och över 200 A bör belysningen delas upp på flera reläer.',dia:'Ledare Ø {d} mm',xsec:'Genomskärning av kabeln',voltQ:'Fordonets elsystem',voltHint:'Personbilar, pickuper och de flesta traktorer har 12 V. Lastbilar och bussar har oftast 24 V.',unitHint:'mm² är standard i Europa. AWG används främst i USA.',more:'Fler inställningar',matHint:'De flesta fordonskablar är av koppar.',pick:'Välj den här kabeln',pick2:'Välj de här kablarna',calcUp:'Beräknat behov: {a} – avrundat uppåt till närmaste standardstorlek.',calcUp2:'Beräknat behov per kabel: {a} – avrundat uppåt till närmaste standardstorlek.',unit:'Enhet för kabelstorlek',
   resLbl1:'Kabelarea som behövs',resLbl2:'Kabelarea per kabel',awgLbl1:'Minsta kabeldimension',awgLbl2:'Minsta kabeldimension per kabel',
   rec:'Välj minst {a}',rec2:'Välj minst 2 × {a}',calc:'Beräknad area: {a}',
   over:'Över {m} – utanför skalan.',overTip:'Över {m} – prova två kablar parallellt.',
-  note:'Beräkningen bygger på samma procentuella spänningsfall som originaldiagrammet. Aluminium leder sämre än koppar (0,0283 mot 0,0175 Ω·mm²/m) och behöver ca 1,6 gånger större area. Vid 24 V räcker ungefär en fjärdedel av arean för samma effekt. Diagrammet tar inte hänsyn till kabelns värmetålighet – kontrollera alltid kabeltillverkarens maxström.',
+  note:'Kabeln dimensioneras så att spänningsfallet blir litet och lamporna lyser med full effekt. Aluminium leder sämre än koppar och behöver ca 1,6 gånger större area. Kabelns värmetålighet ingår inte i beräkningen – kontrollera alltid kabeltillverkarens maxström.',
   hL:'LÄNGD',uL:'meter',hA:'AREA',hI:'STRÖM',uI:'ampere',hP:'EFFEKT',uP:'watt vid {u} V',
   aria:'Nomogram: kabellängd, kabelarea, ström och effekt vid 12 V. Dra punkterna på längd- och strömaxeln.',
   hLen:'Kabellängd i meter',hPow:'Effekt i watt',docTitle:'Kabelarea – Valostore'},
  fi:{title:'Valitse oikea kaapelikoko',lead:'Vedä kaavion keltaisia pisteitä tai käytä säätimiä. Viiva näyttää heti, mikä poikkipinta tarvitaan.',
   lenLabel:'Kaapelin pituus',powLabel:'Teho',powHint:'{u} V:n jännitteellä. Virta lasketaan automaattisesti.',
-  parTitle:'Kaksi kaapelia rinnakkain',parText:'Kumpikin kaapeli kuljettaa puolet virrasta, joten poikkipinta kaapelia kohden puolittuu.',
-  statCur:'Kokonaisvirta',statPer:'Virta kaapelia kohden',volt:'Jännite',mat:'Johdinmateriaali',cu:'Kupari',al:'Alumiini',lenHint:'Mittaa kaapelin reitti akulta valolle – ei linnuntietä.',statRelay:'Rele (vähintään)',relayNote:'Releen on kestettävä koko virta marginaalilla (×1,25). Yli 40 A:n virralla tarvitaan tehorele, ja yli 200 A:n virralla valot kannattaa jakaa usealle releelle.',unit:'Yksikkö',
+  parTitle:'Kaksi kaapelia rinnakkain',parText:'Vinkki: Onko kaapeli liian paksu vedettäväksi tai liitettäväksi? Jaa virta kahdelle rinnakkaiselle kaapelille – silloin kumpikin tarvitsee vain puolet poikkipinnasta.',
+  statCur:'Kokonaisvirta',statPer:'Virta kaapelia kohden',volt:'Jännite',mat:'Johdinmateriaali',cu:'Kupari',al:'Alumiini',lenHint:'Mittaa kaapelin reitti akulta valolle – ei linnuntietä.',statRelay:'Rele (vähintään)',relayNote:'Releen on kestettävä koko virta marginaalilla (×1,25). Yli 40 A:n virralla tarvitaan tehorele, ja yli 200 A:n virralla valot kannattaa jakaa usealle releelle.',dia:'Johdin Ø {d} mm',xsec:'Kaapelin poikkileikkaus',voltQ:'Ajoneuvon sähköjärjestelmä',voltHint:'Henkilöautoissa, pickupeissa ja useimmissa traktoreissa on 12 V. Kuorma-autoissa ja busseissa on yleensä 24 V.',unitHint:'mm² on standardi Euroopassa. AWG:tä käytetään lähinnä Yhdysvalloissa.',more:'Lisäasetukset',matHint:'Useimmat ajoneuvokaapelit ovat kuparia.',pick:'Valitse tämä kaapeli',pick2:'Valitse nämä kaapelit',calcUp:'Laskettu tarve: {a} – pyöristetty ylöspäin lähimpään vakiokokoon.',calcUp2:'Laskettu tarve kaapelia kohden: {a} – pyöristetty ylöspäin lähimpään vakiokokoon.',unit:'Kaapelikoon yksikkö',
   resLbl1:'Tarvittava poikkipinta',resLbl2:'Poikkipinta kaapelia kohden',awgLbl1:'Pienin johdinkoko',awgLbl2:'Pienin johdinkoko kaapelia kohden',
   rec:'Valitse vähintään {a}',rec2:'Valitse vähintään 2 × {a}',calc:'Laskettu poikkipinta: {a}',
   over:'Yli {m} – asteikon ulkopuolella.',overTip:'Yli {m} – kokeile kahta rinnakkaista kaapelia.',
-  note:'Laskenta perustuu samaan prosentuaaliseen jännitehäviöön kuin alkuperäinen kaavio. Alumiini johtaa huonommin kuin kupari (0,0283 vs. 0,0175 Ω·mm²/m) ja vaatii noin 1,6-kertaisen poikkipinnan. 24 V:n järjestelmässä riittää samalla teholla noin neljäsosa poikkipinnasta. Kaavio ei huomioi kaapelin lämmönkestoa – tarkista aina valmistajan ilmoittama suurin virta.',
+  note:'Kaapeli mitoitetaan niin, että jännitehäviö jää pieneksi ja valot loistavat täydellä teholla. Alumiini johtaa huonommin kuin kupari ja vaatii noin 1,6-kertaisen poikkipinnan. Kaapelin lämmönkesto ei sisälly laskelmaan – tarkista aina valmistajan ilmoittama suurin virta.',
   hL:'PITUUS',uL:'metriä',hA:'POIKKIPINTA',hI:'VIRTA',uI:'ampeeria',hP:'TEHO',uP:'wattia, {u} V',
   aria:'Nomogrammi: kaapelin pituus, poikkipinta, virta ja teho 12 V:n jännitteellä. Vedä pituus- ja virta-akselin pisteitä.',
   hLen:'Kaapelin pituus metreinä',hPow:'Teho watteina',docTitle:'Kaapelin poikkipinta – Valostore'},
  no:{title:'Velg riktig kabeltverrsnitt',lead:'Dra i de gule punktene i diagrammet, eller bruk glidebryterne. Linjen viser med en gang hvilket kabeltverrsnitt som trengs.',
   lenLabel:'Kabellengde',powLabel:'Effekt',powHint:'Ved {u} V. Strømmen regnes ut automatisk.',
-  parTitle:'To kabler parallelt',parText:'Hver kabel bærer halve strømmen, så tverrsnittet per kabel blir halvparten.',
-  statCur:'Total strøm',statPer:'Strøm per kabel',volt:'Spenning',mat:'Ledermateriale',cu:'Kobber',al:'Aluminium',lenHint:'Mål kabelens vei fra batteriet til lyset – ikke luftlinje.',statRelay:'Relé (minst)',relayNote:'Reléet må tåle hele strømmen med margin (×1,25). Over 40 A trengs et kraftrelé, og over 200 A bør lysene fordeles på flere reléer.',unit:'Enhet',
+  parTitle:'To kabler parallelt',parText:'Tips: Blir kabelen for grov å trekke eller koble til? Del strømmen på to kabler som går parallelt – da holder halvparten så stort tverrsnitt per kabel.',
+  statCur:'Total strøm',statPer:'Strøm per kabel',volt:'Spenning',mat:'Ledermateriale',cu:'Kobber',al:'Aluminium',lenHint:'Mål kabelens vei fra batteriet til lyset – ikke luftlinje.',statRelay:'Relé (minst)',relayNote:'Reléet må tåle hele strømmen med margin (×1,25). Over 40 A trengs et kraftrelé, og over 200 A bør lysene fordeles på flere reléer.',dia:'Leder Ø {d} mm',xsec:'Tverrsnitt av kabelen',voltQ:'Kjøretøyets elsystem',voltHint:'Personbiler, pickuper og de fleste traktorer har 12 V. Lastebiler og busser har som regel 24 V.',unitHint:'mm² er standard i Europa. AWG brukes hovedsakelig i USA.',more:'Flere innstillinger',matHint:'De fleste kjøretøykabler er av kobber.',pick:'Velg denne kabelen',pick2:'Velg disse kablene',calcUp:'Beregnet behov: {a} – rundet opp til nærmeste standardstørrelse.',calcUp2:'Beregnet behov per kabel: {a} – rundet opp til nærmeste standardstørrelse.',unit:'Enhet for kabelstørrelse',
   resLbl1:'Kabeltverrsnitt som trengs',resLbl2:'Kabeltverrsnitt per kabel',awgLbl1:'Minste kabeldimensjon',awgLbl2:'Minste kabeldimensjon per kabel',
   rec:'Velg minst {a}',rec2:'Velg minst 2 × {a}',calc:'Beregnet tverrsnitt: {a}',
   over:'Over {m} – utenfor skalaen.',overTip:'Over {m} – prøv to kabler parallelt.',
-  note:'Beregningen bygger på samme prosentvise spenningsfall som originaldiagrammet. Aluminium leder dårligere enn kobber (0,0283 mot 0,0175 Ω·mm²/m) og trenger ca. 1,6 ganger større tverrsnitt. Ved 24 V holder omtrent en fjerdedel av tverrsnittet for samme effekt. Diagrammet tar ikke hensyn til kabelens varmetoleranse – sjekk alltid kabelprodusentens maksimale strøm.',
+  note:'Kabelen dimensjoneres slik at spenningsfallet blir lite og lysene lyser med full effekt. Aluminium leder dårligere enn kobber og trenger ca. 1,6 ganger større tverrsnitt. Kabelens varmetoleranse inngår ikke i beregningen – sjekk alltid kabelprodusentens maksimale strøm.',
   hL:'LENGDE',uL:'meter',hA:'TVERRSNITT',hI:'STRØM',uI:'ampere',hP:'EFFEKT',uP:'watt ved {u} V',
   aria:'Nomogram: kabellengde, kabeltverrsnitt, strøm og effekt ved 12 V. Dra punktene på lengde- og strømaksen.',
   hLen:'Kabellengde i meter',hPow:'Effekt i watt',docTitle:'Kabeltverrsnitt – Valostore'},
  da:{title:'Vælg det rigtige kabeltværsnit',lead:'Træk i de gule punkter i diagrammet, eller brug skyderne. Linjen viser med det samme, hvilket kabeltværsnit der skal bruges.',
   lenLabel:'Kabellængde',powLabel:'Effekt',powHint:'Ved {u} V. Strømmen beregnes automatisk.',
-  parTitle:'To kabler parallelt',parText:'Hver kabel bærer den halve strøm, så tværsnittet pr. kabel halveres.',
-  statCur:'Samlet strøm',statPer:'Strøm pr. kabel',volt:'Spænding',mat:'Ledermateriale',cu:'Kobber',al:'Aluminium',lenHint:'Mål kablets vej fra batteriet til lygten – ikke i fugleflugt.',statRelay:'Relæ (mindst)',relayNote:'Relæet skal kunne klare hele strømmen med margin (×1,25). Over 40 A kræves et kraftrelæ, og over 200 A bør lygterne fordeles på flere relæer.',unit:'Enhed',
+  parTitle:'To kabler parallelt',parText:'Tip: Bliver kablet for groft at trække eller tilslutte? Del strømmen på to kabler, der løber parallelt – så er halvt så stort tværsnit pr. kabel nok.',
+  statCur:'Samlet strøm',statPer:'Strøm pr. kabel',volt:'Spænding',mat:'Ledermateriale',cu:'Kobber',al:'Aluminium',lenHint:'Mål kablets vej fra batteriet til lygten – ikke i fugleflugt.',statRelay:'Relæ (mindst)',relayNote:'Relæet skal kunne klare hele strømmen med margin (×1,25). Over 40 A kræves et kraftrelæ, og over 200 A bør lygterne fordeles på flere relæer.',dia:'Leder Ø {d} mm',xsec:'Tværsnit af kablet',voltQ:'Køretøjets elsystem',voltHint:'Personbiler, pickupper og de fleste traktorer har 12 V. Lastbiler og busser har oftest 24 V.',unitHint:'mm² er standard i Europa. AWG bruges primært i USA.',more:'Flere indstillinger',matHint:'De fleste køretøjskabler er af kobber.',pick:'Vælg dette kabel',pick2:'Vælg disse kabler',calcUp:'Beregnet behov: {a} – rundet op til nærmeste standardstørrelse.',calcUp2:'Beregnet behov pr. kabel: {a} – rundet op til nærmeste standardstørrelse.',unit:'Enhed for kabelstørrelse',
   resLbl1:'Nødvendigt kabeltværsnit',resLbl2:'Kabeltværsnit pr. kabel',awgLbl1:'Mindste kabeldimension',awgLbl2:'Mindste kabeldimension pr. kabel',
   rec:'Vælg mindst {a}',rec2:'Vælg mindst 2 × {a}',calc:'Beregnet tværsnit: {a}',
   over:'Over {m} – uden for skalaen.',overTip:'Over {m} – prøv to kabler parallelt.',
-  note:'Beregningen bygger på samme procentvise spændingsfald som det oprindelige diagram. Aluminium leder dårligere end kobber (0,0283 mod 0,0175 Ω·mm²/m) og kræver ca. 1,6 gange større tværsnit. Ved 24 V er cirka en fjerdedel af tværsnittet nok til samme effekt. Diagrammet tager ikke højde for kablets varmetolerance – tjek altid kabelproducentens maksimale strøm.',
+  note:'Kablet dimensioneres, så spændingsfaldet bliver lille, og lygterne lyser med fuld effekt. Aluminium leder dårligere end kobber og kræver ca. 1,6 gange større tværsnit. Kablets varmetolerance indgår ikke i beregningen – tjek altid kabelproducentens maksimale strøm.',
   hL:'LÆNGDE',uL:'meter',hA:'TVÆRSNIT',hI:'STRØM',uI:'ampere',hP:'EFFEKT',uP:'watt ved {u} V',
   aria:'Nomogram: kabellængde, kabeltværsnit, strøm og effekt ved 12 V. Træk punkterne på længde- og strømaksen.',
   hLen:'Kabellængde i meter',hPow:'Effekt i watt',docTitle:'Kabeltværsnit – Valostore'},
  de:{title:'Den richtigen Kabelquerschnitt wählen',lead:'Ziehen Sie die gelben Punkte im Diagramm oder nutzen Sie die Schieberegler. Die Linie zeigt sofort, welcher Kabelquerschnitt nötig ist.',
   lenLabel:'Kabellänge',powLabel:'Leistung',powHint:'Bei {u} V. Der Strom wird automatisch berechnet.',
-  parTitle:'Zwei Kabel parallel',parText:'Jedes Kabel führt den halben Strom, der Querschnitt pro Kabel halbiert sich also.',
-  statCur:'Gesamtstrom',statPer:'Strom pro Kabel',volt:'Spannung',mat:'Leitermaterial',cu:'Kupfer',al:'Aluminium',lenHint:'Messen Sie den Kabelweg von der Batterie zur Leuchte – nicht die Luftlinie.',statRelay:'Relais (mind.)',relayNote:'Das Relais muss den gesamten Strom mit Reserve aushalten (×1,25). Über 40 A ist ein Hochstromrelais nötig, über 200 A sollten die Leuchten auf mehrere Relais verteilt werden.',unit:'Einheit',
+  parTitle:'Zwei Kabel parallel',parText:'Tipp: Ist das Kabel zu dick zum Verlegen oder Anschließen? Teilen Sie den Strom auf zwei parallele Kabel auf – dann reicht pro Kabel der halbe Querschnitt.',
+  statCur:'Gesamtstrom',statPer:'Strom pro Kabel',volt:'Spannung',mat:'Leitermaterial',cu:'Kupfer',al:'Aluminium',lenHint:'Messen Sie den Kabelweg von der Batterie zur Leuchte – nicht die Luftlinie.',statRelay:'Relais (mind.)',relayNote:'Das Relais muss den gesamten Strom mit Reserve aushalten (×1,25). Über 40 A ist ein Hochstromrelais nötig, über 200 A sollten die Leuchten auf mehrere Relais verteilt werden.',dia:'Leiter Ø {d} mm',xsec:'Kabelquerschnitt',voltQ:'Bordnetz des Fahrzeugs',voltHint:'Pkw, Pick-ups und die meisten Traktoren haben 12 V. Lkw und Busse haben meist 24 V.',unitHint:'mm² ist in Europa Standard. AWG wird vor allem in den USA verwendet.',more:'Weitere Einstellungen',matHint:'Die meisten Fahrzeugkabel sind aus Kupfer.',pick:'Dieses Kabel wählen',pick2:'Diese Kabel wählen',calcUp:'Berechneter Bedarf: {a} – aufgerundet auf die nächste Standardgröße.',calcUp2:'Berechneter Bedarf pro Kabel: {a} – aufgerundet auf die nächste Standardgröße.',unit:'Einheit für Kabelgröße',
   resLbl1:'Erforderlicher Querschnitt',resLbl2:'Querschnitt pro Kabel',awgLbl1:'Mindest-Drahtstärke',awgLbl2:'Mindest-Drahtstärke pro Kabel',
   rec:'Mindestens {a} wählen',rec2:'Mindestens 2 × {a} wählen',calc:'Berechneter Querschnitt: {a}',
   over:'Über {m} – außerhalb der Skala.',overTip:'Über {m} – versuchen Sie zwei parallele Kabel.',
-  note:'Die Berechnung beruht auf demselben prozentualen Spannungsfall wie das Originaldiagramm. Aluminium leitet schlechter als Kupfer (0,0283 gegenüber 0,0175 Ω·mm²/m) und braucht etwa den 1,6-fachen Querschnitt. Bei 24 V genügt für dieselbe Leistung etwa ein Viertel des Querschnitts. Das Diagramm berücksichtigt nicht die Strombelastbarkeit des Kabels – prüfen Sie immer den Maximalstrom laut Kabelhersteller.',
+  note:'Das Kabel wird so bemessen, dass der Spannungsfall gering bleibt und die Leuchten mit voller Leistung strahlen. Aluminium leitet schlechter als Kupfer und braucht etwa den 1,6-fachen Querschnitt. Die Strombelastbarkeit des Kabels ist nicht berücksichtigt – prüfen Sie immer den Maximalstrom laut Kabelhersteller.',
   hL:'LÄNGE',uL:'Meter',hA:'QUERSCHNITT',hI:'STROM',uI:'Ampere',hP:'LEISTUNG',uP:'Watt bei {u} V',
   aria:'Nomogramm: Kabellänge, Kabelquerschnitt, Strom und Leistung bei 12 V. Ziehen Sie die Punkte auf der Längen- und Stromachse.',
   hLen:'Kabellänge in Metern',hPow:'Leistung in Watt',docTitle:'Kabelquerschnitt – Valostore'},
  en:{title:'Choose the right cable size',lead:'Drag the yellow dots in the chart, or use the sliders. The line shows right away which cable size you need.',
   lenLabel:'Cable length',powLabel:'Power',powHint:'At {u} V. The current is calculated automatically.',
-  parTitle:'Two cables in parallel',parText:'Each cable carries half the current, so the area needed per cable is halved.',
-  statCur:'Total current',statPer:'Current per cable',volt:'Voltage',mat:'Conductor material',cu:'Copper',al:'Aluminium',lenHint:'Measure the cable route from the battery to the light – not a straight line.',statRelay:'Relay (min.)',relayNote:'The relay must handle the full current with a margin (×1.25). Above 40 A you need a heavy-duty relay, and above 200 A the lights should be split across several relays.',unit:'Unit',
+  parTitle:'Two cables in parallel',parText:'Tip: Is the cable too thick to route or connect? Split the current across two cables running in parallel – each then only needs half the cross-section.',
+  statCur:'Total current',statPer:'Current per cable',volt:'Voltage',mat:'Conductor material',cu:'Copper',al:'Aluminium',lenHint:'Measure the cable route from the battery to the light – not a straight line.',statRelay:'Relay (min.)',relayNote:'The relay must handle the full current with a margin (×1.25). Above 40 A you need a heavy-duty relay, and above 200 A the lights should be split across several relays.',dia:'Conductor Ø {d} mm',xsec:'Cable cross-section',voltQ:'Vehicle electrical system',voltHint:'Cars, pickups and most tractors use 12 V. Trucks and buses usually use 24 V.',unitHint:'mm² is the standard in Europe. AWG is mainly used in the US.',more:'More settings',matHint:'Most vehicle cables are copper.',pick:'Choose this cable',pick2:'Choose these cables',calcUp:'Calculated need: {a} – rounded up to the nearest standard size.',calcUp2:'Calculated need per cable: {a} – rounded up to the nearest standard size.',unit:'Cable size unit',
   resLbl1:'Required cross-section',resLbl2:'Cross-section per cable',awgLbl1:'Minimum wire gauge',awgLbl2:'Minimum wire gauge per cable',
   rec:'Use at least {a}',rec2:'Use at least 2 × {a}',calc:'Calculated cross-section: {a}',
   over:'Above {m} – off the scale.',overTip:'Above {m} – try two cables in parallel.',
-  note:'The calculation uses the same percentage voltage drop as the original chart. Aluminium conducts less well than copper (0.0283 vs 0.0175 Ω·mm²/m) and needs about 1.6 times the cross-section. At 24 V, about a quarter of the cross-section is enough for the same power. The chart does not account for the cable’s heat rating – always check the cable manufacturer’s maximum current.',
+  note:'The cable is sized so that the voltage drop stays small and the lights shine at full power. Aluminium conducts less well than copper and needs about 1.6 times the cross-section. The cable’s heat rating is not included – always check the cable manufacturer’s maximum current.',
   hL:'LENGTH',uL:'metres',hA:'AREA',hI:'CURRENT',uI:'amperes',hP:'POWER',uP:'watts at {u} V',
   aria:'Nomogram: cable length, cross-section, current and power at 12 V. Drag the dots on the length and current axes.',
   hLen:'Cable length in metres',hPow:'Power in watts',docTitle:'Cable size – Valostore'}
@@ -303,6 +332,28 @@ function mkHandle(x){
   el('circle',{r:9,'stroke-width':2,style:'fill:#FFCE00;stroke:#202020'},g);
   return g}
 var hL=mkHandle(XL),hP=mkHandle(XI);
+var xs=document.getElementById('xsec');
+function drawX(Aeach,n,over){
+  while(xs.firstChild)xs.removeChild(xs.firstChild);
+  var k=11.28,R=Math.sqrt(4*Math.min(Aeach,53.5)/Math.PI)/2*k,ins=Math.max(3,R*0.24),Rt=R+ins;
+  var cx=n===2?[30,90]:[60],sc=n===2?Math.min(1,28/Rt):Math.min(1,58/Rt);
+  var core=mat==='al'?'#B9C0C7':'#C8763A',coreHi=mat==='al'?'#E3E7EA':'#E9A46A',coreLo=mat==='al'?'#7E868D':'#8A4A1E';
+  var rings=Aeach<1?1:Aeach<4?2:Aeach<16?3:4,sr=R/(2*rings+1);
+  cx.forEach(function(x){
+    var g=el('g',{class:'cab',transform:'translate('+x+',60) scale('+sc+')'},xs);
+    el('circle',{r:Rt,style:'fill:'+(over?'#E81818':'#D22B2B')},g);
+    el('circle',{r:Rt,style:'fill:none;stroke:rgba(255,255,255,.18);stroke-width:1'},g);
+    el('circle',{r:R+0.6,style:'fill:'+coreLo},g);
+    for(var q=-rings;q<=rings;q++)for(var r=-rings;r<=rings;r++){
+      var s3=-q-r;if(Math.abs(s3)>rings)continue;
+      var px=sr*2*(q+r/2),py=sr*Math.sqrt(3)*r;
+      el('circle',{cx:px,cy:py,r:sr*0.96,style:'fill:'+core+';stroke:'+coreLo+';stroke-width:'+(sr*0.12)},g);
+      el('circle',{cx:px-sr*0.3,cy:py-sr*0.3,r:sr*0.32,style:'fill:'+coreHi+';opacity:.7'},g);
+    }
+    if(over){var t=el('text',{x:0,y:2,'text-anchor':'middle','dominant-baseline':'middle','font-size':R*0.9,'font-weight':800,style:'fill:#FFFFFF;font-family:Inter,Helvetica,Arial,sans-serif'},g);t.textContent='!'}
+  });
+}
+
 
 var state={L:4,P:27,par:false};
 try{var st=JSON.parse(localStorage.getItem('vs-kabel-state')||'null');if(st&&st.L&&st.P){state.L=st.L;state.P=st.P;state.par=!!st.par}}catch(e){}
@@ -339,17 +390,20 @@ function update(){
   document.getElementById('powOut').textContent=fmt(P,0)+' W';
   var lbl=document.getElementById('resLbl'),big=document.getElementById('resArea'),bu=document.getElementById('resUnit'),sub=document.getElementById('resSub');
   var mStr=awg?'AWG 1/0':'50 mm²';
-  if(awg){
-    lbl.textContent=state.par?t.awgLbl2:t.awgLbl1;
-    big.textContent=over?'>1/0':awgFor(A);bu.textContent='AWG';
-    if(over){sub.textContent=(state.par?t.over:t.overTip).replace('{m}',mStr)+' '+t.calc.replace('{a}',areaStr(+A.toFixed(1)));sub.className='sub warn'}
-    else{sub.textContent=(state.par?'2 × AWG '+awgFor(A)+'. ':'')+t.calc.replace('{a}',areaStr(+A.toFixed(A<10?2:1)));sub.className='sub'}
-  }else{
+  var need=areaStr(+A.toFixed(A<10?2:1)),pre=state.par?'2 × ':'';
+  if(over){
     lbl.textContent=state.par?t.resLbl2:t.resLbl1;
-    big.textContent=fmt(A,A<10?2:1);bu.textContent='mm²';
-    if(over){sub.textContent=(state.par?t.over:t.overTip).replace('{m}',mStr);sub.className='sub warn'}
-    else{sub.textContent=(state.par?t.rec2:t.rec).replace('{a}',rec);sub.className='sub'}
+    big.textContent=awg?'>1/0':fmt(A,A<10?2:1);bu.textContent=awg?'AWG':'mm²';
+    sub.textContent=(state.par?t.over:t.overTip).replace('{m}',mStr)+(awg?' '+t.calc.replace('{a}',need):'');sub.className='sub warn';
+  }else{
+    lbl.textContent=state.par?t.pick2:t.pick;
+    big.textContent=pre+(awg?awgFor(A):fmt(STD.find(function(x){return x>=A-1e-9})));bu.textContent=awg?'AWG':'mm²';
+    sub.textContent=(state.par?t.calcUp2:t.calcUp).replace('{a}',need);sub.className='sub';
   }
+  var Ad=over?maxArea():(awg?AWG.find(function(a){return a[0]===awgFor(A)})[1]:STD.find(function(x){return x>=A-1e-9}));
+  drawX(Ad,state.par?2:1,over);
+  xs.setAttribute('aria-label',t.xsec+': '+(state.par?'2 × ':'')+fmt(Ad)+' mm²');
+  document.getElementById('resDia').textContent=over?'':t.dia.replace('{d}',fmt(Math.sqrt(4*Ad/Math.PI),1))+(state.par?' (× 2)':'');
   document.getElementById('stCur').textContent=fmt(I,I<10?2:1)+' A';
   document.getElementById('stPer').textContent=fmt(Ic,Ic<10?2:1)+' A';
   var need=I*1.25,RL=[20,30,40,70,100,150,200],rl=RL.find(function(x){return x>=need-1e-9});
