@@ -38,7 +38,20 @@ main{max-width:1180px;margin:0 auto;padding:28px clamp(16px,4vw,48px) 48px}
 h1{font-family:Saira,Inter,Helvetica,Arial,sans-serif;font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0 0 8px;text-transform:uppercase;letter-spacing:.01em}
 .lead{margin:0 0 24px;font-size:15px;line-height:1.5;max-width:62ch;color:var(--ink)}
 .grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}
-@media (max-width:880px){.grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:880px){.grid{grid-template-columns:minmax(0,1fr)}.panel{order:-1}}
+@media (max-width:640px){
+  header{padding:14px 16px}header img{height:24px}
+  .band{height:6px}
+  main{padding-top:16px}
+  h1{font-size:24px;margin-bottom:12px}
+  .lead{display:none}
+  .panel{padding:16px;gap:16px}
+  .panel .result{order:-3;padding:16px 18px}
+  .panel .result .big{font-size:44px}
+  .panel .field{order:-2}
+  .settings{gap:8px}
+  .seg button{padding:6px 10px;min-height:38px;min-width:56px}
+}
 .card{background:var(--surface);border-radius:8px}
 .chart{padding:8px}
 .chart svg{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -53,11 +66,14 @@ svg.dragging .handle{cursor:grabbing}
 .result .big small{font-size:24px;margin-left:4px}
 .result .sub{font-size:14px;line-height:1.45;color:#F2F2F2}
 .result .sub.warn{color:#ffb3b3}
+.settings{display:flex;flex-direction:column;gap:10px}
 .unitrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .unitrow .k{font-weight:700;font-size:15px}
 .seg{display:flex;gap:4px;background:var(--chip);border-radius:6px;padding:3px}
-.seg button{font:600 14px Inter,Helvetica,Arial,sans-serif;color:var(--ink);background:transparent;border:0;border-radius:4px;padding:8px 16px;min-height:40px;cursor:pointer}
+.seg button{font:600 14px Inter,Helvetica,Arial,sans-serif;color:var(--ink);background:transparent;border:0;border-radius:4px;padding:8px 14px;min-height:40px;min-width:64px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:#202020;color:#FFCE00}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{background:#FFCE00;color:#202020}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{background:#FFCE00;color:#202020}}
 .seg button:focus-visible,.lang button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
 .field{display:flex;flex-direction:column;gap:8px}
 .field .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
@@ -73,7 +89,7 @@ input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:2px;
 .toggle{display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:14px;line-height:1.45}
 .toggle input{width:22px;height:22px;accent-color:#AD8B00;margin:1px 0 0;flex-shrink:0}
 .toggle strong{display:block;font-size:15px}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .stat{background:var(--chip);border-radius:6px;padding:12px 14px}
 .stat .k{font-size:12.5px;color:var(--muted)}
 .stat .v{font-family:Saira,Inter,Helvetica,Arial,sans-serif;font-weight:700;font-size:22px;margin-top:2px}
@@ -99,11 +115,22 @@ input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:2px;
   <div class="grid">
     <div class="card chart"><svg id="nomo" viewBox="0 0 698 730" role="img"></svg></div>
     <div class="card panel">
-      <div class="unitrow"><span class="k" id="unitLbl" data-t="unit"></span>
-        <div class="seg" role="group" aria-labelledby="unitLbl">
-          <button type="button" data-unit="mm2">mm²</button>
-          <button type="button" data-unit="awg">AWG</button>
-        </div>
+      <div class="settings">
+        <div class="unitrow"><span class="k" id="voltLbl" data-t="volt"></span>
+          <div class="seg" role="group" aria-labelledby="voltLbl">
+            <button type="button" data-key="volt" data-val="12">12 V</button>
+            <button type="button" data-key="volt" data-val="24">24 V</button>
+          </div></div>
+        <div class="unitrow"><span class="k" id="matLbl" data-t="mat"></span>
+          <div class="seg" role="group" aria-labelledby="matLbl">
+            <button type="button" data-key="mat" data-val="cu" data-t="cu"></button>
+            <button type="button" data-key="mat" data-val="al" data-t="al"></button>
+          </div></div>
+        <div class="unitrow"><span class="k" id="unitLbl" data-t="unit"></span>
+          <div class="seg" role="group" aria-labelledby="unitLbl">
+            <button type="button" data-key="unit" data-val="mm2">mm²</button>
+            <button type="button" data-key="unit" data-val="awg">AWG</button>
+          </div></div>
       </div>
       <div class="result" aria-live="polite">
         <div class="lbl" id="resLbl"></div>
@@ -113,6 +140,7 @@ input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:2px;
       <div class="field">
         <div class="row"><label for="len" data-t="lenLabel"></label><output id="lenOut" for="len"></output></div>
         <input type="range" id="len" min="0" max="1000" step="1">
+        <div class="hint" data-t="lenHint"></div>
       </div>
       <div class="field">
         <div class="row"><label for="pow" data-t="powLabel"></label><output id="powOut" for="pow"></output></div>
@@ -123,7 +151,9 @@ input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:2px;
       <div class="stats">
         <div class="stat"><div class="k" data-t="statCur"></div><div class="v" id="stCur"></div></div>
         <div class="stat"><div class="k" data-t="statPer"></div><div class="v" id="stPer"></div></div>
+        <div class="stat"><div class="k" data-t="statRelay"></div><div class="v" id="stRelay"></div></div>
       </div>
+      <p class="note" data-t="relayNote"></p>
       <p class="note" data-t="note"></p>
     </div>
   </div>
@@ -132,86 +162,87 @@ input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:2px;
 (function(){
 var T={
  sv:{title:'Välj rätt kabelarea',lead:'Dra i de gula punkterna i diagrammet, eller använd reglagen. Linjen visar direkt vilken kabelarea som behövs.',
-  lenLabel:'Kabellängd',powLabel:'Effekt',powHint:'Vid 12 V. Strömmen räknas fram automatiskt.',
+  lenLabel:'Kabellängd',powLabel:'Effekt',powHint:'Vid {u} V. Strömmen räknas fram automatiskt.',
   parTitle:'Två kablar parallellt',parText:'Varje kabel bär halva strömmen, så arean per kabel blir hälften.',
-  statCur:'Total ström',statPer:'Ström per kabel',unit:'Enhet',
+  statCur:'Total ström',statPer:'Ström per kabel',volt:'Spänning',mat:'Ledarmaterial',cu:'Koppar',al:'Aluminium',lenHint:'Mät kabelns väg från batteriet till lampan – inte fågelvägen.',statRelay:'Relä (minst)',relayNote:'Reläet ska klara hela strömmen med marginal (×1,25). Över 40 A krävs ett kraftrelä, och över 200 A bör belysningen delas upp på flera reläer.',unit:'Enhet',
   resLbl1:'Kabelarea som behövs',resLbl2:'Kabelarea per kabel',awgLbl1:'Minsta kabeldimension',awgLbl2:'Minsta kabeldimension per kabel',
   rec:'Välj minst {a}',rec2:'Välj minst 2 × {a}',calc:'Beräknad area: {a}',
   over:'Över {m} – utanför skalan.',overTip:'Över {m} – prova två kablar parallellt.',
-  note:'Effektskalan avser 12 V. Exempel ur originaldiagrammet: 0,5 mm² vid 4 m klarar 2,3 A eller 27 W.',
-  hL:'LÄNGD',uL:'meter',hA:'AREA',hI:'STRÖM',uI:'ampere',hP:'EFFEKT',uP:'watt vid 12 V',
+  note:'Beräkningen bygger på samma procentuella spänningsfall som originaldiagrammet. Aluminium leder sämre än koppar (0,0283 mot 0,0175 Ω·mm²/m) och behöver ca 1,6 gånger större area. Vid 24 V räcker ungefär en fjärdedel av arean för samma effekt. Diagrammet tar inte hänsyn till kabelns värmetålighet – kontrollera alltid kabeltillverkarens maxström.',
+  hL:'LÄNGD',uL:'meter',hA:'AREA',hI:'STRÖM',uI:'ampere',hP:'EFFEKT',uP:'watt vid {u} V',
   aria:'Nomogram: kabellängd, kabelarea, ström och effekt vid 12 V. Dra punkterna på längd- och strömaxeln.',
   hLen:'Kabellängd i meter',hPow:'Effekt i watt',docTitle:'Kabelarea – Valostore'},
  fi:{title:'Valitse oikea kaapelikoko',lead:'Vedä kaavion keltaisia pisteitä tai käytä säätimiä. Viiva näyttää heti, mikä poikkipinta tarvitaan.',
-  lenLabel:'Kaapelin pituus',powLabel:'Teho',powHint:'12 V:n jännitteellä. Virta lasketaan automaattisesti.',
+  lenLabel:'Kaapelin pituus',powLabel:'Teho',powHint:'{u} V:n jännitteellä. Virta lasketaan automaattisesti.',
   parTitle:'Kaksi kaapelia rinnakkain',parText:'Kumpikin kaapeli kuljettaa puolet virrasta, joten poikkipinta kaapelia kohden puolittuu.',
-  statCur:'Kokonaisvirta',statPer:'Virta kaapelia kohden',unit:'Yksikkö',
+  statCur:'Kokonaisvirta',statPer:'Virta kaapelia kohden',volt:'Jännite',mat:'Johdinmateriaali',cu:'Kupari',al:'Alumiini',lenHint:'Mittaa kaapelin reitti akulta valolle – ei linnuntietä.',statRelay:'Rele (vähintään)',relayNote:'Releen on kestettävä koko virta marginaalilla (×1,25). Yli 40 A:n virralla tarvitaan tehorele, ja yli 200 A:n virralla valot kannattaa jakaa usealle releelle.',unit:'Yksikkö',
   resLbl1:'Tarvittava poikkipinta',resLbl2:'Poikkipinta kaapelia kohden',awgLbl1:'Pienin johdinkoko',awgLbl2:'Pienin johdinkoko kaapelia kohden',
   rec:'Valitse vähintään {a}',rec2:'Valitse vähintään 2 × {a}',calc:'Laskettu poikkipinta: {a}',
   over:'Yli {m} – asteikon ulkopuolella.',overTip:'Yli {m} – kokeile kahta rinnakkaista kaapelia.',
-  note:'Tehoasteikko koskee 12 V:n jännitettä. Esimerkki alkuperäisestä kaaviosta: 0,5 mm² 4 metrin pituudella kestää 2,3 A tai 27 W.',
-  hL:'PITUUS',uL:'metriä',hA:'POIKKIPINTA',hI:'VIRTA',uI:'ampeeria',hP:'TEHO',uP:'wattia, 12 V',
+  note:'Laskenta perustuu samaan prosentuaaliseen jännitehäviöön kuin alkuperäinen kaavio. Alumiini johtaa huonommin kuin kupari (0,0283 vs. 0,0175 Ω·mm²/m) ja vaatii noin 1,6-kertaisen poikkipinnan. 24 V:n järjestelmässä riittää samalla teholla noin neljäsosa poikkipinnasta. Kaavio ei huomioi kaapelin lämmönkestoa – tarkista aina valmistajan ilmoittama suurin virta.',
+  hL:'PITUUS',uL:'metriä',hA:'POIKKIPINTA',hI:'VIRTA',uI:'ampeeria',hP:'TEHO',uP:'wattia, {u} V',
   aria:'Nomogrammi: kaapelin pituus, poikkipinta, virta ja teho 12 V:n jännitteellä. Vedä pituus- ja virta-akselin pisteitä.',
   hLen:'Kaapelin pituus metreinä',hPow:'Teho watteina',docTitle:'Kaapelin poikkipinta – Valostore'},
  no:{title:'Velg riktig kabeltverrsnitt',lead:'Dra i de gule punktene i diagrammet, eller bruk glidebryterne. Linjen viser med en gang hvilket kabeltverrsnitt som trengs.',
-  lenLabel:'Kabellengde',powLabel:'Effekt',powHint:'Ved 12 V. Strømmen regnes ut automatisk.',
+  lenLabel:'Kabellengde',powLabel:'Effekt',powHint:'Ved {u} V. Strømmen regnes ut automatisk.',
   parTitle:'To kabler parallelt',parText:'Hver kabel bærer halve strømmen, så tverrsnittet per kabel blir halvparten.',
-  statCur:'Total strøm',statPer:'Strøm per kabel',unit:'Enhet',
+  statCur:'Total strøm',statPer:'Strøm per kabel',volt:'Spenning',mat:'Ledermateriale',cu:'Kobber',al:'Aluminium',lenHint:'Mål kabelens vei fra batteriet til lyset – ikke luftlinje.',statRelay:'Relé (minst)',relayNote:'Reléet må tåle hele strømmen med margin (×1,25). Over 40 A trengs et kraftrelé, og over 200 A bør lysene fordeles på flere reléer.',unit:'Enhet',
   resLbl1:'Kabeltverrsnitt som trengs',resLbl2:'Kabeltverrsnitt per kabel',awgLbl1:'Minste kabeldimensjon',awgLbl2:'Minste kabeldimensjon per kabel',
   rec:'Velg minst {a}',rec2:'Velg minst 2 × {a}',calc:'Beregnet tverrsnitt: {a}',
   over:'Over {m} – utenfor skalaen.',overTip:'Over {m} – prøv to kabler parallelt.',
-  note:'Effektskalaen gjelder 12 V. Eksempel fra originaldiagrammet: 0,5 mm² ved 4 m tåler 2,3 A eller 27 W.',
-  hL:'LENGDE',uL:'meter',hA:'TVERRSNITT',hI:'STRØM',uI:'ampere',hP:'EFFEKT',uP:'watt ved 12 V',
+  note:'Beregningen bygger på samme prosentvise spenningsfall som originaldiagrammet. Aluminium leder dårligere enn kobber (0,0283 mot 0,0175 Ω·mm²/m) og trenger ca. 1,6 ganger større tverrsnitt. Ved 24 V holder omtrent en fjerdedel av tverrsnittet for samme effekt. Diagrammet tar ikke hensyn til kabelens varmetoleranse – sjekk alltid kabelprodusentens maksimale strøm.',
+  hL:'LENGDE',uL:'meter',hA:'TVERRSNITT',hI:'STRØM',uI:'ampere',hP:'EFFEKT',uP:'watt ved {u} V',
   aria:'Nomogram: kabellengde, kabeltverrsnitt, strøm og effekt ved 12 V. Dra punktene på lengde- og strømaksen.',
   hLen:'Kabellengde i meter',hPow:'Effekt i watt',docTitle:'Kabeltverrsnitt – Valostore'},
  da:{title:'Vælg det rigtige kabeltværsnit',lead:'Træk i de gule punkter i diagrammet, eller brug skyderne. Linjen viser med det samme, hvilket kabeltværsnit der skal bruges.',
-  lenLabel:'Kabellængde',powLabel:'Effekt',powHint:'Ved 12 V. Strømmen beregnes automatisk.',
+  lenLabel:'Kabellængde',powLabel:'Effekt',powHint:'Ved {u} V. Strømmen beregnes automatisk.',
   parTitle:'To kabler parallelt',parText:'Hver kabel bærer den halve strøm, så tværsnittet pr. kabel halveres.',
-  statCur:'Samlet strøm',statPer:'Strøm pr. kabel',unit:'Enhed',
+  statCur:'Samlet strøm',statPer:'Strøm pr. kabel',volt:'Spænding',mat:'Ledermateriale',cu:'Kobber',al:'Aluminium',lenHint:'Mål kablets vej fra batteriet til lygten – ikke i fugleflugt.',statRelay:'Relæ (mindst)',relayNote:'Relæet skal kunne klare hele strømmen med margin (×1,25). Over 40 A kræves et kraftrelæ, og over 200 A bør lygterne fordeles på flere relæer.',unit:'Enhed',
   resLbl1:'Nødvendigt kabeltværsnit',resLbl2:'Kabeltværsnit pr. kabel',awgLbl1:'Mindste kabeldimension',awgLbl2:'Mindste kabeldimension pr. kabel',
   rec:'Vælg mindst {a}',rec2:'Vælg mindst 2 × {a}',calc:'Beregnet tværsnit: {a}',
   over:'Over {m} – uden for skalaen.',overTip:'Over {m} – prøv to kabler parallelt.',
-  note:'Effektskalaen gælder 12 V. Eksempel fra det oprindelige diagram: 0,5 mm² ved 4 m kan klare 2,3 A eller 27 W.',
-  hL:'LÆNGDE',uL:'meter',hA:'TVÆRSNIT',hI:'STRØM',uI:'ampere',hP:'EFFEKT',uP:'watt ved 12 V',
+  note:'Beregningen bygger på samme procentvise spændingsfald som det oprindelige diagram. Aluminium leder dårligere end kobber (0,0283 mod 0,0175 Ω·mm²/m) og kræver ca. 1,6 gange større tværsnit. Ved 24 V er cirka en fjerdedel af tværsnittet nok til samme effekt. Diagrammet tager ikke højde for kablets varmetolerance – tjek altid kabelproducentens maksimale strøm.',
+  hL:'LÆNGDE',uL:'meter',hA:'TVÆRSNIT',hI:'STRØM',uI:'ampere',hP:'EFFEKT',uP:'watt ved {u} V',
   aria:'Nomogram: kabellængde, kabeltværsnit, strøm og effekt ved 12 V. Træk punkterne på længde- og strømaksen.',
   hLen:'Kabellængde i meter',hPow:'Effekt i watt',docTitle:'Kabeltværsnit – Valostore'},
  de:{title:'Den richtigen Kabelquerschnitt wählen',lead:'Ziehen Sie die gelben Punkte im Diagramm oder nutzen Sie die Schieberegler. Die Linie zeigt sofort, welcher Kabelquerschnitt nötig ist.',
-  lenLabel:'Kabellänge',powLabel:'Leistung',powHint:'Bei 12 V. Der Strom wird automatisch berechnet.',
+  lenLabel:'Kabellänge',powLabel:'Leistung',powHint:'Bei {u} V. Der Strom wird automatisch berechnet.',
   parTitle:'Zwei Kabel parallel',parText:'Jedes Kabel führt den halben Strom, der Querschnitt pro Kabel halbiert sich also.',
-  statCur:'Gesamtstrom',statPer:'Strom pro Kabel',unit:'Einheit',
+  statCur:'Gesamtstrom',statPer:'Strom pro Kabel',volt:'Spannung',mat:'Leitermaterial',cu:'Kupfer',al:'Aluminium',lenHint:'Messen Sie den Kabelweg von der Batterie zur Leuchte – nicht die Luftlinie.',statRelay:'Relais (mind.)',relayNote:'Das Relais muss den gesamten Strom mit Reserve aushalten (×1,25). Über 40 A ist ein Hochstromrelais nötig, über 200 A sollten die Leuchten auf mehrere Relais verteilt werden.',unit:'Einheit',
   resLbl1:'Erforderlicher Querschnitt',resLbl2:'Querschnitt pro Kabel',awgLbl1:'Mindest-Drahtstärke',awgLbl2:'Mindest-Drahtstärke pro Kabel',
   rec:'Mindestens {a} wählen',rec2:'Mindestens 2 × {a} wählen',calc:'Berechneter Querschnitt: {a}',
   over:'Über {m} – außerhalb der Skala.',overTip:'Über {m} – versuchen Sie zwei parallele Kabel.',
-  note:'Die Leistungsskala gilt für 12 V. Beispiel aus dem Originaldiagramm: 0,5 mm² bei 4 m verträgt 2,3 A oder 27 W.',
-  hL:'LÄNGE',uL:'Meter',hA:'QUERSCHNITT',hI:'STROM',uI:'Ampere',hP:'LEISTUNG',uP:'Watt bei 12 V',
+  note:'Die Berechnung beruht auf demselben prozentualen Spannungsfall wie das Originaldiagramm. Aluminium leitet schlechter als Kupfer (0,0283 gegenüber 0,0175 Ω·mm²/m) und braucht etwa den 1,6-fachen Querschnitt. Bei 24 V genügt für dieselbe Leistung etwa ein Viertel des Querschnitts. Das Diagramm berücksichtigt nicht die Strombelastbarkeit des Kabels – prüfen Sie immer den Maximalstrom laut Kabelhersteller.',
+  hL:'LÄNGE',uL:'Meter',hA:'QUERSCHNITT',hI:'STROM',uI:'Ampere',hP:'LEISTUNG',uP:'Watt bei {u} V',
   aria:'Nomogramm: Kabellänge, Kabelquerschnitt, Strom und Leistung bei 12 V. Ziehen Sie die Punkte auf der Längen- und Stromachse.',
   hLen:'Kabellänge in Metern',hPow:'Leistung in Watt',docTitle:'Kabelquerschnitt – Valostore'},
  en:{title:'Choose the right cable size',lead:'Drag the yellow dots in the chart, or use the sliders. The line shows right away which cable size you need.',
-  lenLabel:'Cable length',powLabel:'Power',powHint:'At 12 V. The current is calculated automatically.',
+  lenLabel:'Cable length',powLabel:'Power',powHint:'At {u} V. The current is calculated automatically.',
   parTitle:'Two cables in parallel',parText:'Each cable carries half the current, so the area needed per cable is halved.',
-  statCur:'Total current',statPer:'Current per cable',unit:'Unit',
+  statCur:'Total current',statPer:'Current per cable',volt:'Voltage',mat:'Conductor material',cu:'Copper',al:'Aluminium',lenHint:'Measure the cable route from the battery to the light – not a straight line.',statRelay:'Relay (min.)',relayNote:'The relay must handle the full current with a margin (×1.25). Above 40 A you need a heavy-duty relay, and above 200 A the lights should be split across several relays.',unit:'Unit',
   resLbl1:'Required cross-section',resLbl2:'Cross-section per cable',awgLbl1:'Minimum wire gauge',awgLbl2:'Minimum wire gauge per cable',
   rec:'Use at least {a}',rec2:'Use at least 2 × {a}',calc:'Calculated cross-section: {a}',
   over:'Above {m} – off the scale.',overTip:'Above {m} – try two cables in parallel.',
-  note:'The power scale applies to 12 V. Example from the original chart: 0.5 mm² at 4 m handles 2.3 A or 27 W.',
-  hL:'LENGTH',uL:'metres',hA:'AREA',hI:'CURRENT',uI:'amperes',hP:'POWER',uP:'watts at 12 V',
+  note:'The calculation uses the same percentage voltage drop as the original chart. Aluminium conducts less well than copper (0.0283 vs 0.0175 Ω·mm²/m) and needs about 1.6 times the cross-section. At 24 V, about a quarter of the cross-section is enough for the same power. The chart does not account for the cable’s heat rating – always check the cable manufacturer’s maximum current.',
+  hL:'LENGTH',uL:'metres',hA:'AREA',hI:'CURRENT',uI:'amperes',hP:'POWER',uP:'watts at {u} V',
   aria:'Nomogram: cable length, cross-section, current and power at 12 V. Drag the dots on the length and current axes.',
   hLen:'Cable length in metres',hPow:'Power in watts',docTitle:'Cable size – Valostore'}
 };
 var LOC={sv:'sv-SE',fi:'fi-FI',no:'nb-NO',da:'da-DK',de:'de-DE',en:'en-GB'};
-var lang=null,unit='mm2';
-try{var s=localStorage.getItem('vs-kabel-lang');if(T[s])lang=s;var u=localStorage.getItem('vs-kabel-unit');if(u==='awg'||u==='mm2')unit=u;}catch(e){}
+var lang=null,unit='mm2',volt=12,mat='cu';
+try{var s=localStorage.getItem('vs-kabel-lang');if(T[s])lang=s;var u=localStorage.getItem('vs-kabel-unit');if(u==='awg'||u==='mm2')unit=u;var vv=+localStorage.getItem('vs-kabel-volt');if(vv===24||vv===12)volt=vv;var mm=localStorage.getItem('vs-kabel-mat');if(mm==='al'||mm==='cu')mat=mm;}catch(e){}
 if(!lang){var nl=((navigator.languages&&navigator.languages[0])||navigator.language||'sv').toLowerCase().slice(0,2);if(nl==='nb'||nl==='nn')nl='no';lang=T[nl]?nl:'sv';}
 
-var K=18.4,V=12,Lmin=0.8,Lmax=15,Imin=1.8,Imax=250,Y0=716,H=636;
+var K=18.4,Lmin=0.8,Lmax=15,Imin=1.8,Imax=250,Y0=716,H=636;
 var mL=H/Math.log10(Lmax/Lmin),mI=H/Math.log10(Imax/Imin),mA=mL*mI/(mL+mI);
 var XL=184,XI=504,XA=XL+(XI-XL)*mL/(mL+mI);
 function yL(L){return Y0-mL*Math.log10(L/Lmin)}
 function yI(I){return Y0-mI*Math.log10(I/Imin)}
-function yA(A){return Y0-mA*Math.log10(K*A/(Lmin*Imin))}
+function fac(){return (mat==='al'?0.0283/0.0175:1)*(12/volt)}
+function yA(A){return Y0-mA*Math.log10(K*A/(fac()*Lmin*Imin))}
 function Lfromy(y){return Lmin*Math.pow(10,(Y0-y)/mL)}
 function Ifromy(y){return Imin*Math.pow(10,(Y0-y)/mI)}
-var Pmin=25,Pmax=Imax*V;
+function Pmin(){return volt===24?50:25}var Pmax=3000;
 var STD=[0.25,0.35,0.5,0.75,1,1.5,2.5,4,6,10,16,25,35,50];
 // AWG: name, area mm²
 var AWG=[['22',0.326],['21',0.410],['20',0.518],['19',0.653],['18',0.823],['17',1.04],['16',1.31],['15',1.65],['14',2.08],['13',2.62],['12',3.31],['11',4.17],['10',5.26],['9',6.63],['8',8.37],['7',10.5],['6',13.3],['5',16.8],['4',21.2],['3',26.7],['2',33.6],['1',42.4],['1/0',53.5]];
@@ -232,7 +263,7 @@ function drawStatic(){
   if(gStatic)gStatic.remove();
   gStatic=el('g',{});
   var g=gStatic,t=T[lang];
-  [[XL,'middle',t.hL,t.uL],[XA,'middle',t.hA,unit==='awg'?'AWG':'mm²'],[XI-10,'end',t.hI,t.uI],[XI+10,'start',t.hP,t.uP]].forEach(function(h){
+  [[XL,'middle',t.hL,t.uL],[XA,'middle',t.hA,unit==='awg'?'AWG':'mm²'],[XI-10,'end',t.hI,t.uI],[XI+10,'start',t.hP,t.uP.replace('{u}',volt)]].forEach(function(h){
     tx(h[0],30,h[2],h[1],15,700,'Saira','var(--ink)',g);tx(h[0],50,h[3],h[1],11.5,400,'Inter','var(--muted)',g)});
   ln(XL,yL(Lmax),XL,yL(Lmin),1.5,'var(--ink)',g);
   var maj=[1,1.5,2,3,4,5,6,8,10,12,15];
@@ -244,17 +275,20 @@ function drawStatic(){
   mi.forEach(function(v){ln(XI-12,yI(v),XI,yI(v),1.5,'var(--ink)',g);tx(XI-18,yI(v),fmt(v),'end',13,500,null,null,g)});
   var P=[25,30,40,50,60,80,100,150,200,300,400,500,600,800,1000,1500,2000,2500,3000];
   var pm=[];for(var p=25;p<100;p+=5)pm.push(p);for(p=100;p<300;p+=10)pm.push(p);for(p=300;p<1000;p+=50)pm.push(p);for(p=1000;p<3000;p+=100)pm.push(p);
-  pm.forEach(function(p){if(P.indexOf(p)<0)ln(XI,yI(p/V),XI+5,yI(p/V),1,'var(--tick)',g)});
-  P.forEach(function(p){ln(XI,yI(p/V),XI+12,yI(p/V),1.5,'var(--ink)',g);tx(XI+18,yI(p/V),fmt(p),'start',13,500,null,null,g)});
-  ln(XA,yA(maxArea())-14,XA,yA(0.25)+14,1.5,'var(--ink)',g);
+  function okP(p){var i=p/volt;return i>=Imin-1e-9&&i<=Imax+1e-9}
+  pm.forEach(function(p){if(P.indexOf(p)<0&&okP(p))ln(XI,yI(p/volt),XI+5,yI(p/volt),1,'var(--tick)',g)});
+  P.forEach(function(p){if(!okP(p))return;ln(XI,yI(p/volt),XI+12,yI(p/volt),1.5,'var(--ink)',g);tx(XI+18,yI(p/volt),fmt(p),'start',13,500,null,null,g)});
+  function vis(a){var y=yA(a);return y>=86&&y<=Y0}
+  var shown=(unit==='awg'?AWG.map(function(a){return a[1]}):STD).filter(vis);
+  if(shown.length)ln(XA,Math.max(80,yA(shown[shown.length-1])-14),XA,Math.min(Y0+6,yA(shown[0])+14),1.5,'var(--ink)',g);
   if(unit==='awg'){
-    AWG.forEach(function(a){if(AWG_LABELS.indexOf(a[0])<0)ln(XA-5,yA(a[1]),XA+5,yA(a[1]),1,'var(--tick)',g)});
-    AWG.forEach(function(a){if(AWG_LABELS.indexOf(a[0])>=0){ln(XA-10,yA(a[1]),XA+10,yA(a[1]),1.5,'var(--ink)',g);tx(XA-16,yA(a[1]),a[0],'end',13,600,null,null,g)}});
+    AWG.forEach(function(a){if(vis(a[1])&&AWG_LABELS.indexOf(a[0])<0)ln(XA-5,yA(a[1]),XA+5,yA(a[1]),1,'var(--tick)',g)});
+    AWG.forEach(function(a){if(vis(a[1])&&AWG_LABELS.indexOf(a[0])>=0){ln(XA-10,yA(a[1]),XA+10,yA(a[1]),1.5,'var(--ink)',g);tx(XA-16,yA(a[1]),a[0],'end',13,600,null,null,g)}});
   }else{
-    STD.forEach(function(v){ln(XA-10,yA(v),XA+10,yA(v),1.5,'var(--ink)',g);tx(XA-16,yA(v),fmt(v),'end',13,600,null,null,g)});
+    STD.forEach(function(v){if(!vis(v))return;ln(XA-10,yA(v),XA+10,yA(v),1.5,'var(--ink)',g);tx(XA-16,yA(v),fmt(v),'end',13,600,null,null,g)});
   }
   svg.insertBefore(g,svg.firstChild);
-  svg.setAttribute('aria-label',t.aria);
+  svg.setAttribute('aria-label',t.aria.replace('12 V',volt+' V'));
 }
 var gDyn=el('g',{});
 var lineEl=el('line',{'stroke-width':3,'stroke-linecap':'round',style:'stroke:var(--line)'},gDyn);
@@ -270,20 +304,20 @@ function mkHandle(x){
   return g}
 var hL=mkHandle(XL),hP=mkHandle(XI);
 
-var state={L:4,P:28,par:false};
+var state={L:4,P:27,par:false};
 try{var st=JSON.parse(localStorage.getItem('vs-kabel-state')||'null');if(st&&st.L&&st.P){state.L=st.L;state.P=st.P;state.par=!!st.par}}catch(e){}
 
 var len=document.getElementById('len'),pow=document.getElementById('pow'),par=document.getElementById('par');
 function L2s(L){return Math.round(1000*Math.log(L/Lmin)/Math.log(Lmax/Lmin))}
 function s2L(s){return Lmin*Math.pow(Lmax/Lmin,s/1000)}
-function P2s(P){return Math.round(1000*Math.log(P/Pmin)/Math.log(Pmax/Pmin))}
-function s2P(s){return Pmin*Math.pow(Pmax/Pmin,s/1000)}
+function P2s(P){return Math.round(1000*Math.log(P/Pmin())/Math.log(Pmax/Pmin()))}
+function s2P(s){return Pmin()*Math.pow(Pmax/Pmin(),s/1000)}
 function roundL(L){return L<3?Math.round(L*10)/10:(L<10?Math.round(L*4)/4:Math.round(L*2)/2)}
 function roundP(P){return P<100?Math.round(P):(P<1000?Math.round(P/5)*5:Math.round(P/10)*10)}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 
 function update(){
-  var t=T[lang],L=state.L,P=state.P,I=P/V,Ic=state.par?I/2:I,A=Ic*L/K,awg=unit==='awg';
+  var t=T[lang],L=state.L,P=state.P,I=P/volt,Ic=state.par?I/2:I,A=Ic*L*fac()/K,awg=unit==='awg';
   var y1=yL(L),y2=yI(clamp(Ic,Imin,Imax)),dx=XI-XL,dy=y2-y1,e=0.07;
   lineEl.setAttribute('x1',XL-dx*e);lineEl.setAttribute('y1',y1-dy*e);lineEl.setAttribute('x2',XI+dx*e);lineEl.setAttribute('y2',y2+dy*e);
   var ya=(y1*(XI-XA)+y2*(XA-XL))/(XI-XL),over=A>maxArea();
@@ -318,18 +352,22 @@ function update(){
   }
   document.getElementById('stCur').textContent=fmt(I,I<10?2:1)+' A';
   document.getElementById('stPer').textContent=fmt(Ic,Ic<10?2:1)+' A';
+  var need=I*1.25,RL=[20,30,40,70,100,150,200],rl=RL.find(function(x){return x>=need-1e-9});
+  document.getElementById('stRelay').textContent=rl?rl+' A':'> 200 A';
   try{localStorage.setItem('vs-kabel-state',JSON.stringify(state))}catch(e){}
 }
 function applyAll(){
   var t=T[lang];document.documentElement.lang=lang==='no'?'nb':lang;document.title=t.docTitle;
-  document.querySelectorAll('[data-t]').forEach(function(n){n.textContent=t[n.getAttribute('data-t')]});
+  document.querySelectorAll('[data-t]').forEach(function(n){n.textContent=t[n.getAttribute('data-t')].replace('{u}',volt)});
+  state.P=clamp(state.P,Pmin(),Pmax);
   document.querySelectorAll('.lang button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-lang')===lang?'true':'false')});
-  document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-unit')===unit?'true':'false')});
+  var cur={unit:unit,volt:String(volt),mat:mat};
+  document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed',cur[b.getAttribute('data-key')]===b.getAttribute('data-val')?'true':'false')});
   drawStatic();update();
-  try{localStorage.setItem('vs-kabel-lang',lang);localStorage.setItem('vs-kabel-unit',unit)}catch(e){}
+  try{localStorage.setItem('vs-kabel-lang',lang);localStorage.setItem('vs-kabel-unit',unit);localStorage.setItem('vs-kabel-volt',String(volt));localStorage.setItem('vs-kabel-mat',mat)}catch(e){}
 }
 document.querySelectorAll('.lang button').forEach(function(b){b.addEventListener('click',function(){lang=b.getAttribute('data-lang');applyAll()})});
-document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){unit=b.getAttribute('data-unit');applyAll()})});
+document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-key'),v=b.getAttribute('data-val');if(k==='unit')unit=v;else if(k==='volt')volt=+v;else mat=v;applyAll()})});
 len.addEventListener('input',function(){state.L=roundL(s2L(+len.value));update()});
 pow.addEventListener('input',function(){state.P=roundP(s2P(+pow.value));update()});
 par.addEventListener('change',function(){state.par=par.checked;update()});
@@ -340,7 +378,7 @@ function startDrag(which,ev){drag=which;svg.classList.add('dragging');try{svg.se
 function moveDrag(ev){
   if(!drag)return;var y=svgY(ev).y;
   if(drag==='L'){state.L=roundL(clamp(Lfromy(y),Lmin,Lmax))}
-  else{var Ic=clamp(Ifromy(y),Imin,Imax),P=Ic*V*(state.par?2:1);state.P=roundP(clamp(P,Pmin,Pmax))}
+  else{var Ic=clamp(Ifromy(y),Imin,Imax),P=Ic*volt*(state.par?2:1);state.P=roundP(clamp(P,Pmin(),Pmax))}
   update()}
 svg.addEventListener('pointerdown',function(e){
   var q=svgY(e);if(q.y<70||q.y>Y0+14)return;
